@@ -11,10 +11,14 @@ import { Search, Menu, Bell, TrendingUp, Clock, ChevronRight } from "lucide-reac
 export const metadata: Metadata = {
   title: 'RapidNews - Latest News and Updates',
   description: 'Stay informed with the latest news and updates from around the world.',
+  alternates: {
+    canonical: 'https://rapidnews.com',
+  },
   openGraph: {
     title: 'RapidNews - Latest News and Updates',
     description: 'Stay informed with the latest news and updates from around the world.',
     type: 'website',
+    url: 'https://rapidnews.com',
   },
 }
 
@@ -30,8 +34,30 @@ export default async function Home() {
   const featuredPost = allPosts.length > 0 ? allPosts[0] : null
   const secondaryPosts = allPosts.slice(1, 3)
 
+  // Create structured data for the website
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'RapidNews',
+    url: 'https://rapidnews.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://rapidnews.com/search?q={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
+    },
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background">
         <div className="container flex h-16 items-center justify-between">

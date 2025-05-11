@@ -27,12 +27,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} - RapidNews`,
     description: post.excerpt,
+    alternates: {
+      canonical: `https://rapidnews.com/news/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: 'article',
       publishedTime: post.date,
       authors: [post.author],
+      images: post.image ? [post.image] : [],
+      url: `https://rapidnews.com/news/${post.slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
       images: post.image ? [post.image] : [],
     },
   }
@@ -46,8 +56,42 @@ export default async function NewsPost({ params }: Props) {
     notFound()
   }
   
+  // Create structured data for news article
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image ? [post.image] : [],
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'RapidNews',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://rapidnews.com/logo.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://rapidnews.com/news/${post.slug}`,
+    },
+    keywords: post.tags.join(', '),
+  }
+  
   return (
     <div className="flex min-h-screen flex-col">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background">
         <div className="container flex h-16 items-center justify-between">
