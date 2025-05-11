@@ -48,12 +48,12 @@ export async function getNewsPostBySlug(slug: string): Promise<NewsPost | null> 
   try {
     const fullPath = path.join(contentDirectory, `${slug}.mdx`)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
-    const { data, content } = matter(fileContents)
-    const mdxSource = await serialize(content)
+    const { content,data } = matter(fileContents)
+    // const mdxSource = await serialize(content)
 
     return {
       slug,
-      content: mdxSource,
+      content: content,
       title: data.title,
       date: data.date,
       excerpt: data.excerpt,
